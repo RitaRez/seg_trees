@@ -8,7 +8,7 @@ using namespace std;
 class Vertex {
 
     private:
-        // stores sum of the elements in node
+        // stores max of the elements in range relative to the node
         int max_val;
         // pointer to left and right children
         Vertex *left, *right;
