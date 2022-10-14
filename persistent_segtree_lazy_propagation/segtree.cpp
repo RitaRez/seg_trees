@@ -38,48 +38,37 @@ void Segtree::update_range(int ql, int qr, int new_value){
 }
 Vertex * Segtree::update_range(Vertex *v, int l, int r, int ql, int qr, int value){
 	
-	cout << "L: " << l << " R: " << r << " max_value: " << v->max_val << endl;
 	// Se vértice atual for folha retornamos ele com incremento
-	if (l == r){ 
-		return new Vertex(v->max_val + value);
+
+	if(v->lazy != 0){
+		Vertex *old_v = v;
+		v = new Vertex(v->left, v->right, v->max_val + v->lazy);
+		if(l != r){
+			v->left->lazy += old_v->lazy;
+			v->right->lazy += old_v->lazy;
+		}
+		old_v->lazy = 0;
 	}
+
 	if (l > r || l > qr || r < ql){
 		return v;
 	}
-	Vertex *new_left = v->left;
-	Vertex *new_right = v->right;
-	int mid = (l + r) / 2;
+	// if (l == r){ 
+	// 	return new Vertex(v->max_val + value);
+	// }
 	
-	// Se os filhos forem lazy vai criar novos nós para versão atual
-	if (v->left->lazy != 0) {
-		//Copia criada com o update_range
-		new_left = new Vertex(v->left->left, v->left->right, v->left->max_val + v->left->lazy);
-		// Se o filho da esquerda não for uma folha
-		if (l != mid){
-			new_left->left->lazy += v->left->lazy;
-			new_left->right->lazy += v->left->lazy;
-		}
-    }
-	
-	if (v->right->lazy != 0) {
-		//Copia criada com o update_range
-		new_right = new Vertex(v->right->right, v->right->right, v->right->max_val + v->right->lazy);
-		// Se o filho da esquerda não for uma folha
-		if ((mid + 1) != r){
-			//Propagando o lazy pros filhos dos filhos
-			new_right->left->lazy += v->right->lazy;
-			new_right->right->lazy += v->right->lazy;
-		}
-    }
-
 	if (l >= ql && r <= qr) {
-		Vertex *new_v = new Vertex(new_left, new_right, v->max_val + value);
-		new_left->lazy += value;
-		new_right->lazy += value;
-		return new_v;
+		v->max_val += value;
+		if(l != r){
+			v->left->lazy += value;
+			v->right->lazy += value;
+		}
+		return v;
 	}
 
-	return new Vertex(update_range(new_left, l, mid, ql, qr, value), update_range(new_right, mid + 1, r, ql, qr, value));
+	int mid = (l + r) / 2;
+	Vertex *lv = new Vertex(update_range(v->left, l, mid, ql, qr, value), update_range(v->right, mid + 1, r, ql, qr, value));
+	return lv;
 }
 
 
@@ -93,6 +82,15 @@ int Segtree::query(int idx, int ql, int qr){
 }
 int Segtree::query(Vertex* v, int l, int r, int ql, int qr){
 
+	if(v->lazy != 0){
+		v->max_val += v->lazy;
+		if(l != r){
+			v->left->lazy += v->lazy;
+			v->right->lazy += v->lazy;
+		}
+		v->lazy = 0;
+	}
+	
 	if (ql > r or qr < l or l > r)
        return INT_MIN;
 
@@ -100,34 +98,7 @@ int Segtree::query(Vertex* v, int l, int r, int ql, int qr){
 	    return v->max_val;
 	
 	int m = (l+r) / 2;
-	Vertex *new_left = v->left;
-	Vertex *new_right = v->right;
-	
-	// Se os filhos forem lazy vai criar novos nós para versão atual
-	if (v->left->lazy != 0) {
-		//Copia criada com o update_range
-		new_left = new Vertex(v->left->left, v->left->right, v->left->max_val + v->left->lazy);
-		// Se o filho da esquerda não for uma folha
-		if (l != m){
-			new_left->left->lazy += v->left->lazy;
-			new_left->right->lazy += v->left->lazy;
-		}
-		v->left = new_left;
-    }
-	
-	if (v->right->lazy != 0) {
-		//Copia criada com o update_range
-		new_right = new Vertex(v->right->right, v->right->right, v->right->max_val + v->right->lazy);
-		// Se o filho da esquerda não for uma folha
-		if ((m + 1) != r){
-			//Propagando o lazy pros filhos dos filhos
-			new_right->left->lazy += v->right->lazy;
-			new_right->right->lazy += v->right->lazy;
-		}
-		v->right = new_right;
-    }
-	
-	
+		
 	return max(query(v->left, l, m, ql, qr), query(v->right, m+1, r, ql, qr));
 }
 

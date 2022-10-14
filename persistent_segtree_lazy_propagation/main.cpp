@@ -20,13 +20,20 @@ int main(){
 	segtree.build();
     cout << "O maior elemento do array é: " << segtree.query(0, n-1) << endl;
 
-    segtree.update_range(0, 1, 10);
+    segtree.update_range(0, 6, 10);
     cout << "O maior elemento do array é: " << segtree.query(0, n-1) << endl;
 
-    segtree.update_range(5, 10, 10);
-
+    segtree.update_range(0, 3, 10);
     cout << "O maior elemento do array é: " << segtree.query(0, n-1) << endl;
 
+    segtree.update_range(6, 9, 10);
+    cout << "O maior elemento do array é: " << segtree.query(0, n-1) << endl;
+
+
+    cout << "O maior elemento do array é: " << segtree.query(0, 0, n-1) << endl;
+    cout << "O maior elemento do array é: " << segtree.query(1, 0, n-1) << endl;
+    cout << "O maior elemento do array é: " << segtree.query(2, 0, n-1) << endl;
+    cout << "O maior elemento do array é: " << segtree.query(3, 0, n-1) << endl;
 
     return 0;
 }
