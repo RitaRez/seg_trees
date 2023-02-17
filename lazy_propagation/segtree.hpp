@@ -12,6 +12,8 @@ private:
     vector<int> arr;      // Input array
     vector<int> lazy;     // Lazy array
 
+
+// oi
 public:
     Segtree(vector<int> arr);
 
